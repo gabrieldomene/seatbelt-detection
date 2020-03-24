@@ -1,11 +1,12 @@
 import numpy as np
 import cv2
 from time import sleep
+from random import randint
 
 def centroid(x, y, w, h):
     '''Get center of element'''
     x_f = int(w/2)
-    y_f = int(h/2)
+    y_f = int(h/1)
     c_x = x + x_f
     c_y = y + y_f
     return c_x, c_y
@@ -20,8 +21,8 @@ def create_roi(event, x, y, flags, params):
 		roi_end.append((x, y))
 
 
-MIN_WIDTH = 80
-MIN_HEIGHT = 80
+MIN_WIDTH = 85
+MIN_HEIGHT = 85
 DELAY = 60
 LINE_POS = 450
 
@@ -54,7 +55,8 @@ def main():
 
 	        # print("image[{}:{}, {}:{}]".format(y_start, y_end, x_start, x_end))
 
-	        roi_road = resize[y_start : y_end, x_start : x_end]
+	        roi_road = resize[y_start : y_end, x_start : x_end].copy()
+	        roi_to_save = roi_road.copy()
 
 	        
 	        
@@ -70,7 +72,7 @@ def main():
 
 	        contours, hierarchy = cv2.findContours(closing, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-	        cv2.line(roi_road, (0, int((y_end-y_start)/2)), (x_end, int((y_end-y_start)/2)), (0, 0, 255), 2)
+	        cv2.line(resize, (x_start, int((y_end - y_start)/2) + y_start), (x_end, int((y_end - y_start)/2) + y_start), (0, 0, 255), 2)
 	        
 	        for (i, contour) in enumerate(contours):
 	            (x, y, w, h) = cv2.boundingRect(contour)
@@ -80,16 +82,18 @@ def main():
 	            center = centroid(x, y, w, h)
 	            detected.append(center)
 	            
-	            cv2.circle(resize, center, 2, (0, 0, 255), -1)
+	            cv2.circle(resize, center, 5, (0, 0, 255), -1)
 
 	            cv2.rectangle(resize, (x, y), (x+w, y+h), (0, 0, 255), 2)
 
 	            for (x, y) in detected:
-	                if (y < (LINE_POS + 3)) and (y >= (LINE_POS - 3) and (x < 900)):
-	                    cars += 1
-	                    cv2.line(resize, (x_start, int((y_end - y_start)/2) + y_start), (x_end, int((y_end - y_start)/2) + y_start), (255, 0, 255), 3)
-	                    detected.remove((x, y))
-	                    print("Cars detected {}" .format(cars))
+	                if (y < (LINE_POS + 6)) and (y >= (LINE_POS - 10)) and (x < 700):
+	                	cars += 1
+	                	cv2.imwrite(str(cars)+'teste.png',roi_road)
+	                	cv2.line(resize, (x_start, int((y_end - y_start)/2) + y_start), (x_end, int((y_end - y_start)/2) + y_start), (255, 0, 255), 3)
+	                	detected.remove((x, y))
+	                	print("Cars detected {}" .format(cars))
+
 
 	        cv2.putText(resize, "Cars count: "+str(cars), (400, 70), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 5)
         	
