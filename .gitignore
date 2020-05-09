@@ -2,3 +2,7 @@
 *.mp4
 *.txt
 *.png
+videos/
+*.zip
+*.xz
+.ipynb_checkpoints/
