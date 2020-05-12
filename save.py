@@ -35,19 +35,20 @@ def generate_roi(event, x, y, flags, param):
 
 count = 0
 img_count =0
-cap = cv2.VideoCapture("videos/road1.mp4")
+cap = cv2.VideoCapture("videos/road-la5.mov")
 frame_lenght = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 playing = False
 cv2.namedWindow("ROI Selection")
 
 roi_number = 0
+save_count = 0
 while True:
     _, frame = cap.read()
     if not _:
         break
     
     while not playing:
-        roi_resize = cv2.resize(frame, None, fx=0.3, fy=0.3)
+        roi_resize = cv2.resize(frame, None, fx=ratio_scale, fy=ratio_scale)
         cv2.imshow("ROI Selection", roi_resize)
         cv2.setMouseCallback("ROI Selection", generate_roi)
         print("stuck inside while")
@@ -60,24 +61,20 @@ while True:
     if playing:
         tempo = float(1/60)
         time.sleep(tempo)
-        if count % 10 == 0:
+        if count % 2 == 0:
             resize = cv2.resize(frame, None, fx=ratio_scale, fy=ratio_scale)
             progress = "[{}/{}]".format(count, frame_lenght)
             roi_count = 0
-            for i in range(0, len(rois), 2):
-                roi_count +=1
+            for i in range(0, len(rois), 2): # For with step 2 to get the pair [start, end]
+                roi_count +=1 # variable for change the window name
+                save_count += 1 # count variable used in setting a name for saving the img
                 x_start, y_start = rois[i]
                 x_end, y_end = rois[i+1]
                 roi_name = "Roi {}".format(roi_count)
                 new_roi = frame[int(y_start/ratio_scale):int(y_end/ratio_scale), int(x_start/ratio_scale):int(x_end/ratio_scale)].copy()
                 cv2.imshow(roi_name, cv2.resize(new_roi, None, fx=ratio_scale, fy=ratio_scale))
+                cv2.imwrite("dataset_la5/{:05d}.png".format(save_count), new_roi)
 
-            # resize = cv2.resize(frame, None, fx=0.3, fy=0.3)
-            # cv2.putText(resize, progress, (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2)
-            # cv2.imshow("frame", resize)
-            # cv2.imwrite("new_dataset/{:05d}.png".format(count), frame)
-            # cv2.imwrite("teste.png".format(count), frame_roi)
-            # cv2.imwrite("teste2.png".format(count), frame_roi2)
         count += 1
         
         if cv2.waitKey(1) & 0XFF == ord("q"):
