@@ -1,4 +1,7 @@
 *.txt
 *.zip
 *.xz
-*/
+dataset*/
+videos/
+predictions/
+.ipynb_checkpoints/
