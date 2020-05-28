@@ -9,7 +9,7 @@
 ### Augmentations
 
 1. First set
-   Pre-processing options:
+   * Pre-processing options:
       * Auto-adjust contrast -> Adaptive Equalization
 
    Augmentations per image -> 2
