@@ -16,7 +16,7 @@ The frame roi are differente for each video and were selected based manual selec
 '''
 
 font = cv2.FONT_HERSHEY_SIMPLEX
-ratio_scale = 0.3
+ratio_scale = 0.25
 rois = []
 color = (0, 255, 255)
 def generate_roi(event, x, y, flags, param):
@@ -35,7 +35,7 @@ def generate_roi(event, x, y, flags, param):
 
 count = 0
 img_count =0
-cap = cv2.VideoCapture("videos/road-la5.mov")
+cap = cv2.VideoCapture("VIDEO PATH HERE")
 frame_lenght = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 playing = False
 cv2.namedWindow("ROI Selection")
@@ -51,17 +51,17 @@ while True:
         roi_resize = cv2.resize(frame, None, fx=ratio_scale, fy=ratio_scale)
         cv2.imshow("ROI Selection", roi_resize)
         cv2.setMouseCallback("ROI Selection", generate_roi)
-        print("stuck inside while")
+        print("Waiting for releasing the ROI selections")
         if cv2.waitKey(0) == ord("c"):
             playing = True
             roi_number = int(len(rois)/2)
-            print("Left while, started playing. . .")
+            print("Left while, started playing/saving. . .")
             cv2.destroyAllWindows()
 
     if playing:
         tempo = float(1/60)
         time.sleep(tempo)
-        if count % 2 == 0:
+        if count % 10 == 0: # Modify here the pace for saving every X frames
             resize = cv2.resize(frame, None, fx=ratio_scale, fy=ratio_scale)
             progress = "[{}/{}]".format(count, frame_lenght)
             roi_count = 0
@@ -73,8 +73,8 @@ while True:
                 roi_name = "Roi {}".format(roi_count)
                 new_roi = frame[int(y_start/ratio_scale):int(y_end/ratio_scale), int(x_start/ratio_scale):int(x_end/ratio_scale)].copy()
                 cv2.imshow(roi_name, cv2.resize(new_roi, None, fx=ratio_scale, fy=ratio_scale))
-                cv2.imwrite("dataset_la5/{:05d}.png".format(save_count), new_roi)
-
+                cv2.imwrite("DATASET FOLDER SELECT/{:05d}.png".format(save_count), new_roi)
+                cv2.imwrite("teste{:05d}.png".format(save_count), frame)
         count += 1
         
         if cv2.waitKey(1) & 0XFF == ord("q"):
